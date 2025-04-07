@@ -53,7 +53,7 @@
 \pagestyle{fancy} % All pages have headers and footers
 \fancyhead{} % Blank out the default header
 \fancyfoot{} % Blank out the default footer
-\fancyhead[C]{Seminar Data Science \& Artificial Intelligence $\bullet$ SS22 proceedings} % Custom header text
+\fancyhead[C]{Seminar Data Science \& Artificial Intelligence $\bullet$ SS25} % Custom header text
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
 \usepackage{titling} % Customizing the title section
@@ -68,11 +68,12 @@
 
 \pretitle{\begin{center}\Huge\bfseries} % Article title formatting
 \posttitle{\end{center}} % Article title closing formatting
-\title{Article Title} % Article title
+\title{Continuous Control in Reinforcement Learning} % Article title
 \author{%
-\textsc{Max Mustermann} \\[1ex] % Your name
+\textsc{Leonard Kreil \& Zia Asmara} \\[1ex] % Your name
 \normalsize Wedel University of Applied Sciences\\ % Your institution
-\normalsize \href{max.mustermann@stud.fh-wedel.de}{max.mustermann@stud.fh-wedel.de} % Your email address
+\normalsize \href{stud106680@fh-wedel.de}{stud106680@fh-wedel.de} \\ % Your email address
+\normalsize \href{stud106700@fh-wedel.de}{stud106700@fh-wedel.de} % Your email address
 %\and % Uncomment if 2 authors are required, duplicate these 4 lines if more
 %\textsc{Jane Smith}\thanks{Corresponding author} \\[1ex] % Second author's name
 %\normalsize University of Utah \\ % Second author's institution
@@ -91,19 +92,20 @@
 
 % Print the title
 \maketitle
-
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
-
-\section{Introduction}
-
-\lettrine[nindent=0em,lines=3]{L} orem ipsum dolor sit amet, consectetur adipiscing elit.
-\blindtext % Dummy text
-
-\blindtext % Dummy text
-
+\input{introduction.tex}
 %------------------------------------------------
+%\input{continuous_controll}
+
+% \section{Continuous Control}
+%------------------------------------------------
+%\section{Algorithms}
+%------------------------------------------------
+%\section{Bipedal Walker}
+%------------------------------------------------
+
 
 \section{Methods}
 
@@ -155,7 +157,7 @@ e = mc^2
 
 \subsection{Subsection One}
 
-A statement requiring citation \cite{AI_Modern_Approach}.
+A statement requiring citation \cite{doi:10.1126/science.aar6404}.
 \blindtext % Dummy text
 
 \subsection{Subsection Two}
@@ -167,7 +169,7 @@ A statement requiring citation \cite{AI_Modern_Approach}.
 %----------------------------------------------------------------------------------------
 
 \bibliographystyle{abbrv} % "abbrv" reference style
-\bibliography{refs} % Entries are in the refs.bib file
+\bibliography{references} % Entries are in the refs.bib file
 
 %----------------------------------------------------------------------------------------
 
