@@ -1,0 +1,136 @@
+
+\section{Theoretical foundations}
+
+This chapter is primarily based on the presentation by Sutton and Barto \cite{Sutton2018}\footnote{All definitions and concepts not attributed to other sources are based on the exposition in Sutton and Barto (2018).}.
+
+\subsection{RL for Continuous Control}
+
+\subsubsection{Defenition of agent, environment, reward and policy}
+
+RL is considered in the context of an agent interacting with an environment over a sequence of discrete time steps. This interaction can be formally described as follows:\\
+
+\noindent At each time step~$t$:
+\begin{itemize}
+    \item The agent observes the current state $s_t \in \mathcal{S}$ of the environment,
+    \item selects an action $a_t \in \mathcal{A}$ based on its policy,
+    \item receives a reward $r_t \in \mathbb{R}$ from the environment, and
+    \item transitions to a new state $s_{t+1}$.
+\end{itemize}
+
+\noindent The agent is the learning entity that aims to maximize the cumulative reward. It observes the environment through its state representation and acts according to its policy. Mathematically, the agent's objective is to maximize the expected return $G_t$, defined as the discounted sum of future rewards:
+
+\begin{equation}
+G_t = \sum_{k=0}^{\infty} \gamma^k r_{t+k+1}
+\end{equation}
+
+\noindent where $\gamma \in [0,1]$ is the discount factor, which determines the present value of future rewards.\\
+
+\noindent The environment defines the dynamics of the system in which the agent operates. It determines how the state evolves and what reward is returned in response to the agent’s actions. Given a current state and an action taken by the agent, the environment produces the next state and the corresponding reward. This interaction captures the core feedback mechanism that enables learning and adaptation in reinforcement learning.\\
+
+\noindent The reward \( r_t \) is a scalar signal provided by the environment that indicates how good the agent’s action is in the current state. The reward function is formally defined as:
+
+\begin{equation}
+\mathcal{R}: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow \mathbb{R}
+\end{equation}
+
+\noindent where \( \mathcal{R}(s_t, a_t, s_{t+1}) \) represents the expected immediate reward when transitioning from state \( s_t \) to state \( s_{t+1} \) after taking action \( a_t \).\\
+
+\noindent The policy \( \pi \) defines the agent’s strategy for selecting actions based on the current state. It guides the agent’s behavior by determining which action to take in each situation. In the case of a stochastic policy, \( \pi(a|s) \) represents the probability of taking action \( a \) given state \( s \). This allows the agent to explore different actions with varying likelihoods. For deterministic policies, the policy is a direct mapping from states to actions, written as \( \pi(s) = a \), meaning the agent always chooses the same action \( a \) in state \( s \).
+
+\subsubsection{Differences between discrete and continuous action spaces}
+
+The fundamental difference between discrete and continuous action spaces lies in the number of possible actions available to the agent.
+
+\noindent Discrete action spaces have a finite number of actions from which the agent can choose:
+\begin{equation}
+    \mathcal{A} = \{a_1, a_2, ..., a_n\}
+\end{equation}
+Examples are selecting one of four directions in a grid world or selecting a move in chess.\\
+\noindent Continuous action spaces have actions from an uncountably infinite set, typically represented as real-valued vectors:
+\begin{equation}
+\mathcal{A} \subseteq \mathbb{R}^d
+\end{equation}
+where $d$ is the dimensionality of the action space. Examples are controlling joint torques in a robotic arm or adjusting steering and acceleration in a vehicle.\\
+
+\noindent Dieser Unterschied führt zu mehreren wichtigen Unterschieden im Algorithmendesign:
+
+\begin{enumerate}
+    \item \textbf{Exploration strategies}: In discrete action spaces, exploration can be realized through simple methods such as $\varepsilon$-greedy or softmax policies. In continuous action spaces, by contrast, exploration typically requires adding continuous noise to the actions (e.g., in DDPG \cite{lillicrap2019continuouscontroldeepreinforcement}) or using stochastic policies that explicitly model probability distributions over actions (e.g., in SAC \cite{haarnoja2018softactorcriticoffpolicymaximum} or PPO \cite{schulman2017proximalpolicyoptimizationalgorithms}).
+
+    \item \textbf{Action selection}: Discrete actions can be selected using argmax operations over Q-values. In continuous action spaces, action selection typically involves sampling from stochastic policies or directly outputting action values through specialized policy networks.
+
+    \item \textbf{Function approximation}: Continuous action spaces require more advanced function approximation techniques to represent policies and value functions over an infinite action domain \cite{fujimoto2018addressingfunctionapproximationerror}.
+\end{enumerate}
+
+\subsection{Mathematical Description of Continuous Control}
+
+\subsubsection{Markov Decision Processes (MDP)}
+
+Reinforcement learning problems are typically formalized as Markov Decision Processes. An MDP is defined by the tuple $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, where:
+
+\begin{itemize}
+    \item $\mathcal{S}$ is the state space
+    \item $\mathcal{A}$ is the action space
+    \item $\mathcal{P}$ is the transition probability distribution
+    \item $\mathcal{R}$ is the reward function
+    \item $\gamma \in [0,1]$ is the discount factor
+\end{itemize}
+
+\noindent For continuous control problems, both $\mathcal{S}$ and $\mathcal{A}$ are continuous sets, typically represented as real-valued vectors.\\
+
+
+Reinforcement-Learning-Probleme werden typischerweise als Markov-Entscheidungsprozesse (MDPs) formalisiert. Ein MDP wird durch das Tupel $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$ definiert, wobei:
+
+\begin{itemize}
+    \item $\mathcal{S}$ der Zustandsraum ist
+    \item $\mathcal{A}$ der Aktionsraum ist
+    \item $\mathcal{P}: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow [0,1]$ die Übergangswahrscheinlichkeitsfunktion ist, wobei $\mathcal{P}(s'|s,a)$ die Wahrscheinlichkeit angibt, in den Zustand $s'$ überzugehen, wenn Aktion $a$ im Zustand $s$ ausgeführt wird
+    \item $\mathcal{R}: \mathcal{S} \times \mathcal{A} \times \mathcal{S} \rightarrow \mathbb{R}$ die Belohnungsfunktion ist
+    \item $\gamma \in [0,1]$ der Diskontierungsfaktor ist
+\end{itemize}
+
+Für Continuous-Control-Probleme sind sowohl $\mathcal{S}$ als auch $\mathcal{A}$ kontinuierliche Mengen, typischerweise dargestellt als reellwertige Vektoren.//
+
+Die Übergangsdynamiken und Belohnungsfunktionen sind ebenfalls kontinuierliche Abbildungen.
+
+Die \textbf{Wertfunktion} $V^\pi(s)$ repräsentiert den erwarteten Return, wenn im Zustand $s$ gestartet und der Policy $\pi$ gefolgt wird:
+
+\begin{equation}
+V^\pi(s) = \mathbb{E}_\pi\left[\sum_{k=0}^{\infty} \gamma^k r_{t+k+1} \middle| S_t = s\right]
+\end{equation}
+
+Die \textbf{Aktionswertfunktion} $Q^\pi(s,a)$ repräsentiert den erwarteten Return, wenn Aktion $a$ im Zustand $s$ ausgeführt und dann der Policy $\pi$ gefolgt wird:
+
+\begin{equation}
+Q^\pi(s,a) = \mathbb{E}_\pi\left[\sum_{k=0}^{\infty} \gamma^k r_{t+k+1} \middle| S_t = s, A_t = a\right]
+\end{equation}
+
+Die optimale Policy $\pi^*$ ist die Policy, die den erwarteten Return von allen Zuständen aus maximiert:
+
+\begin{equation}
+\pi^* = \arg\max_\pi V^\pi(s) \quad \forall s \in \mathcal{S}
+\end{equation}
+
+\subsubsection{Policy-Gradient-Methoden}
+
+Policy-Gradient-Methoden sind besonders gut für Continuous-Control-Probleme geeignet, da sie die Policy-Parameter direkt optimieren, ohne eine Diskretisierung des Aktionsraums zu erfordern \cite{Sutton2000}. Die Kernidee besteht darin, die Parameter $\theta$ einer parametrisierten Policy $\pi_\theta$ in Richtung des Gradienten des erwarteten Returns anzupassen:
+
+\begin{equation}
+\nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} \left[\nabla_\theta \log \pi_\theta(a|s) \cdot Q^{\pi_\theta}(s,a)\right]
+\end{equation}
+
+Dies ist das Policy-Gradient-Theorem, wobei $J(\theta)$ der erwartete Return unter der Policy $\pi_\theta$ ist:
+
+\begin{equation}
+J(\theta) = \mathbb{E}_{\pi_\theta} \left[G_0\right]
+\end{equation}
+
+Für kontinuierliche Aktionsräume wird die Policy $\pi_\theta(a|s)$ oft als Gaußsche Verteilung modelliert:
+
+\begin{equation}
+\pi_\theta(a|s) = \mathcal{N}(\mu_\theta(s), \sigma_\theta(s))
+\end{equation}
+
+wobei $\mu_\theta(s)$ und $\sigma_\theta(s)$ der Mittelwert bzw. die Standardabweichung der Aktionsverteilung sind, die durch neuronale Netze parametrisiert werden.
+
+Actor-Critic-Methoden kombinieren Policy-Gradient-Ansätze mit Wertfunktionsapproximation, wobei ein Actor-Netzwerk die Policy und ein Critic-Netzwerk die Aktionswerte oder Advantages schätzt \cite{Konda2000}.
