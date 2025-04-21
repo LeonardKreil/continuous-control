@@ -1,0 +1,104 @@
+\section{Algorithms for Continuous Control}
+
+\noindent This chapter introduces three widely-used algorithms for continuous control tasks: Deep Deterministic Policy Gradient (DDPG)\cite{lillicrap2019continuouscontroldeepreinforcement}, Soft Actor-Critic (SAC)\cite{haarnoja2018softactorcriticoffpolicymaximum}, and Proximal Policy Optimization (PPO)\cite{schulman2017proximalpolicyoptimizationalgorithms}. All of these methods build upon the actor-critic architecture, yet differ substantially in their approaches to policy representation, exploration strategies, and training stability. The goal is to provide a conceptual and practical foundation for the subsequent empirical evaluation on the Bipedal Walker environment.\\
+
+\subsection{Deep Deterministic Policy Gradient (DDPG) / Twin Delayed DDPG (TD3)}
+
+\noindent DDPG\cite{lillicrap2019continuouscontroldeepreinforcement} is an off-policy, model-free algorithm tailored for continuous action spaces. It combines deterministic policy gradients with the actor-critic framework, making it a natural choice for tasks like robotic locomotion or motor control.\\
+
+\noindent \textbf{Architecture:}  
+The actor network outputs a deterministic continuous action \( a = \mu(s|\theta^\mu) \) given a state \( s \).  
+The critic network estimates the action-value function \( Q(s,a|\theta^Q) \), which evaluates the expected return for state-action pairs.\\
+
+\noindent \textbf{Exploration:}  
+Since the policy is deterministic, exploration is achieved by adding stochastic noise (commonly from an Ornstein-Uhlenbeck process) to the actor’s output during training.  
+This method is sensitive to the choice of noise parameters and can lead to instability.\\
+
+\noindent \textbf{Stabilization Techniques:}
+\begin{itemize}
+    \item Target networks for both actor and critic, updated slowly to stabilize learning.
+    \item Experience replay buffer to break correlations between sequential data and improve sample efficiency.
+\end{itemize}
+
+\noindent TD3 enhances DDPG by addressing overestimation bias and training instability:
+\begin{itemize}
+    \item Utilizes two Q-networks and takes the minimum of the two to reduce bias.
+    \item Delays actor updates relative to the critic updates.
+    \item Adds target policy smoothing by perturbing actions before feeding them into the target critic.
+\end{itemize}
+
+\noindent \textbf{Advantages:} High sample efficiency in continuous domains.  
+Flexible and relatively straightforward to implement.\\
+
+\noindent \textbf{Limitations:} Sensitive to hyperparameters.  
+Performance degrades in noisy or highly stochastic environments.\\
+
+\subsection{Soft Actor-Critic (SAC)}
+
+\noindent SAC\cite{haarnoja2018softactorcriticoffpolicymaximum} is an off-policy algorithm that introduces entropy regularization into the objective function, encouraging more exploratory and robust behavior during training.\\
+
+\noindent \textbf{Core Idea:}  
+Rather than maximizing only expected return, SAC also maximizes policy entropy.  
+This encourages the policy to remain stochastic and avoid premature convergence to suboptimal deterministic behaviors.\\
+
+\noindent \textbf{Architecture:}
+\begin{itemize}
+    \item The actor models a stochastic policy, typically as a Gaussian distribution with learnable mean and standard deviation.
+    \item Two Q-networks (critics) are used to compute a conservative Q-value estimate, following a similar strategy to TD3.
+    \item A temperature parameter \( \alpha \) controls the balance between exploration (entropy) and exploitation (reward maximization), and can be fixed or learned.
+\end{itemize}
+
+\noindent \textbf{Advantages:} High training stability and robustness.  
+Efficient in terms of sample usage.  
+Naturally handles uncertainty and stochastic dynamics.\\
+
+\noindent \textbf{Limitations:} More complex implementation than DDPG.  
+Tuning the entropy coefficient can be challenging.\\
+
+\subsection{Proximal Policy Optimization (PPO)}
+
+\noindent PPO\cite{schulman2017proximalpolicyoptimizationalgorithms} is an on-policy algorithm designed to address instability in standard policy gradient methods. It is widely used due to its simplicity and reliability across a wide range of environments.\\
+
+\noindent \textbf{Key Concept:}  
+PPO introduces a clipped surrogate objective to limit the size of policy updates, preventing destructive parameter shifts.  
+Instead of trusting raw gradient ascent, it constrains how much the new policy can diverge from the old one during optimization.\\
+
+\noindent \textbf{Architecture:}
+\begin{itemize}
+    \item The actor network outputs a stochastic policy, typically parameterizing a Gaussian distribution.
+    \item The critic estimates either the state-value function \( V(s) \) or the advantage function \( A(s,a) \), with Generalized Advantage Estimation (GAE) often used to reduce variance.
+\end{itemize}
+
+\noindent \textbf{Stability Enhancements:}
+\begin{itemize}
+    \item Clipped objective function during policy updates.
+    \item Optional value function clipping and adaptive KL penalties for further regularization.
+\end{itemize}
+
+\noindent \textbf{Advantages:} Highly stable and consistent performance.  
+Less sensitive to hyperparameter choices than DDPG or SAC.  
+Effective across many continuous control environments.\\
+
+\noindent \textbf{Limitations:} On-policy nature leads to lower sample efficiency.  
+May scale less effectively to high-dimensional action spaces.\\
+
+\subsection{Comparative Analysis}
+
+\noindent The following table summarizes the core characteristics and theoretical trade-offs of the three algorithms:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|l|}
+\hline
+\textbf{Algorithm} & \textbf{Policy Type} & \textbf{Policy Strategy} & \textbf{Exploration Mechanism} & \textbf{Stability} & \textbf{Sample Efficiency} & \textbf{Key Advantages} & \textbf{Key Limitations} \\
+\hline
+DDPG & Deterministic & Off-Policy & Noise-based (OU noise) & Moderate & High & Simple, efficient & Sensitive, brittle under noise \\
+TD3  & Deterministic & Off-Policy & Smoothed target + noise & High & High & Robust, less bias & Deterministic policy limitations \\
+SAC  & Stochastic    & Off-Policy & Entropy-regularized & Very High & Very High & Robust exploration & Complex, entropy tuning \\
+PPO  & Stochastic    & On-Policy  & Sampling-based, clipped & Very High & Moderate & Stable, easy to use & Lower efficiency \\
+\hline
+\end{tabular}
+\caption{Comparison of continuous control algorithms}
+\end{table}
+
+\noindent This comparison provides a theoretical baseline for the practical evaluation in the upcoming chapter. The performance of these algorithms on the Bipedal Walker benchmark will be analyzed in terms of convergence speed, stability, and overall effectiveness in continuous control.\\
