@@ -1,24 +1,27 @@
+import torch as th
+
 def get_algorithm_config(algo_name):
     """Gibt die Hyperparameter-Konfiguration für den angegebenen Algorithmus zurück."""
     
     # Gemeinsame Parameter für alle Algorithmen
     common_params = {
         "learning_rate": 3e-4,
-        "buffer_size": 1000000,
+        #"buffer_size": 1000000,
         "batch_size": 256,
         "gamma": 0.99,
         "verbose": 1,
-        "tensorboard_log": "./results/tensorboard/",
+        "tensorboard_log": "./results/tensorboard/"
     }
     
     # Spezifische Parameter für jeden Algorithmus
     algo_params = {
         "ppo": {
             **common_params,
+            "policy": "MlpPolicy",
             "n_steps": 2048,
             "ent_coef": 0.0,
             "learning_rate": 3e-4,
-            # "batch_size": 64,
+            "batch_size": 64,
             "n_epochs": 10,
             "gae_lambda": 0.95,
             "clip_range": 0.2,
@@ -31,7 +34,7 @@ def get_algorithm_config(algo_name):
             "ent_coef": "auto",
             "target_update_interval": 1,
             "train_freq": 1,
-            "gradient_steps": 1,
+            "gradient_steps": 4,
         },
         "ddpg": {
             **common_params,

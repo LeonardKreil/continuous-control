@@ -37,13 +37,13 @@ def main():
             env_id=args.env,
             config=config,
             seed=args.seed,
-            pretrained_model_path="./models/ddpg_BipedalWalker-v3_42.zip"
+            pretrained_model_path="./models/ppo_BipedalWalker-v3_42_final.zip"
         )
         
         if args.visualize:
             experiment.visualize()
         else:
-            #experiment.train(total_timesteps=args.train_steps, eval_freq=args.eval_freq)
+            experiment.train(total_timesteps=args.train_steps, eval_freq=args.eval_freq)
             experiment.evaluate(n_eval_episodes=10)
             experiment.visualize()
 

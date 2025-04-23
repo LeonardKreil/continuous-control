@@ -11,6 +11,7 @@ from stable_baselines3.common.monitor import Monitor
 from utils.logger import setup_logger
 from utils.plotting import plot_learning_curve
 from utils.evaluation import evaluate_and_save
+from utils.callbacks import TrainingLoggerCallback
 
 class Experiment:
     def __init__(self, algo_name, env_id, config, seed=42, pretrained_model_path=None):
@@ -18,13 +19,17 @@ class Experiment:
         self.env_id = env_id
         self.config = config
         self.seed = seed
-        self.logger = setup_logger(f"{algo_name}_{env_id}_{seed}")
         
         # Erstelle Verzeichnisse falls sie nicht existieren
         os.makedirs("./models", exist_ok=True)
-        os.makedirs("./results", exist_ok=True)
+        self.results_dir = f"./results/{algo_name}_{env_id}_{seed}"
+        os.makedirs(self.results_dir, exist_ok=True)
+        
+        self.logger = setup_logger(f"{algo_name}_{env_id}_{seed}", log_dir=f"{self.results_dir}/logs")
         
         self.env = self._create_env()
+        # Erstelle eine separate Umgebung für Evaluierungen
+        self.eval_env = self._create_env()
         
         # Lade vortrainiertes Modell oder erstelle ein neues
         if pretrained_model_path and os.path.exists(pretrained_model_path):
@@ -87,13 +92,23 @@ class Experiment:
         else:
             raise ValueError(f"Unbekannter Algorithmus: {self.algo_name}")
     
-    def train(self, total_timesteps, eval_freq=10000):
+    def train(self, total_timesteps, eval_freq=10000, n_eval_episodes=5, save_freq=50000):
         """Trainiert das Modell und evaluiert es regelmäßig."""
         self.logger.info(f"Start Training: {self.algo_name} on {self.env_id}")
         start_time = time.time()
         
         # Callback für die regelmäßige Evaluierung erstellen
-        callbacks = []
+        callbacks = [
+            TrainingLoggerCallback(
+                log_dir=self.results_dir,
+                eval_env=self.eval_env,
+                eval_freq=eval_freq,
+                n_eval_episodes=n_eval_episodes,
+                save_freq=save_freq,
+                save_path=f"./models/{self.algo_name}_{self.env_id}_{self.seed}",
+                verbose=1
+            )
+        ]
         
         # Training starten
         self.model.learn(
@@ -103,7 +118,7 @@ class Experiment:
         )
         
         # Modell speichern
-        model_path = f"./models/{self.algo_name}_{self.env_id}_{self.seed}.zip"
+        model_path = f"./models/{self.algo_name}_{self.env_id}_{self.seed}_final.zip"
         self.model.save(model_path)
         self.logger.info(f"Modell gespeichert unter: {model_path}")
         

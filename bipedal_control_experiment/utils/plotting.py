@@ -4,22 +4,51 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 
-def plot_learning_curve(log_folder, title, x_axis="Timesteps"):
+def plot_learning_curve(log_dirs, labels=None, title="Lernkurven", window=5):
     """
-    Zeichnet eine Lernkurve basierend auf den Monitor-Dateien.
+    Plottet Lernkurven aus mehreren Trainingsläufen zum Vergleich.
+    
+    Args:
+        log_dirs: Liste von Verzeichnissen, die Training-Log-Dateien enthalten
+        labels: Liste von Labels für die Legende
+        title: Titel des Plots
+        window: Fenstergröße für gleitenden Durchschnitt
     """
-    plt.figure(figsize=(10, 5))
+    plt.figure(figsize=(10, 6))
+    
+    if labels is None:
+        labels = [os.path.basename(log_dir) for log_dir in log_dirs]
+    
+    for i, log_dir in enumerate(log_dirs):
+        log_file = os.path.join(log_dir, "training_log.csv")
+        
+        if not os.path.exists(log_file):
+            print(f"Warnung: Log-Datei {log_file} nicht gefunden.")
+            continue
+        
+        # Log-Daten laden
+        data = pd.read_csv(log_file)
+        
+        # Gleitender Durchschnitt für die Rewards berechnen
+        rewards = data['reward'].values
+        timesteps = data['timestep'].values
+        
+        if window > 1:
+            smooth_rewards = np.convolve(rewards, np.ones(window)/window, mode='valid')
+            # Passe die x-Achse entsprechend an
+            smooth_timesteps = timesteps[window-1:]
+        else:
+            smooth_rewards = rewards
+            smooth_timesteps = timesteps
+        
+        # Plot
+        plt.plot(smooth_timesteps, smooth_rewards, label=labels[i])
+    
+    plt.xlabel('Timesteps')
+    plt.ylabel('Durchschnittliche Belohnung')
     plt.title(title)
-    
-    # Lade Trainingsdaten
-    x, y = ts2xy(load_results(log_folder), 'timesteps')
-    y = np.array(moving_average(y, window=50))
-    
-    # Zeichne Lernkurve
-    plt.plot(x, y)
-    plt.xlabel(x_axis)
-    plt.ylabel("Reward")
-    plt.grid()
+    plt.legend()
+    plt.grid(True)
     
     # Speichere Diagramm
     os.makedirs("./results/plots", exist_ok=True)
