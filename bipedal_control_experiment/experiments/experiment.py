@@ -12,9 +12,10 @@ from utils.logger import setup_logger
 from utils.plotting import plot_learning_curve
 from utils.evaluation import evaluate_and_save
 from utils.callbacks import TrainingLoggerCallback
+from datetime import datetime
 
 class Experiment:
-    def __init__(self, algo_name, env_id, config, seed=42, pretrained_model_path=None):
+    def __init__(self, algo_name, env_id, config, seed=10, pretrained_model_path=None):
         self.algo_name = algo_name
         self.env_id = env_id
         self.config = config
@@ -87,7 +88,7 @@ class Experiment:
                 )
                 config = {k: v for k, v in self.config.items() 
                           if k not in ["action_noise", "noise_sigma"]}
-                return TD3(self.config["policy"], self.env, action_noise=action_noise, **config)
+                return TD3(env=self.env, action_noise=action_noise, **config)
             return TD3(self.config["policy"], self.env, **{k: v for k, v in self.config.items() if k != "policy"})
         else:
             raise ValueError(f"Unbekannter Algorithmus: {self.algo_name}")
@@ -109,6 +110,10 @@ class Experiment:
                 verbose=1
             )
         ]
+
+        start_time = time.time()
+        start_dt = datetime.fromtimestamp(start_time).strftime('%Y-%m-%d %H:%M:%S')
+        self.logger.info(f"Trainingsstart: {start_dt}")
         
         # Training starten
         self.model.learn(
@@ -116,6 +121,12 @@ class Experiment:
             callback=callbacks,
             log_interval=100
         )
+
+        end_time = time.time()
+        duration = end_time - start_time
+        end_dt = datetime.fromtimestamp(end_time).strftime('%Y-%m-%d %H:%M:%S')
+        self.logger.info(f"Trainingsende: {end_dt}")
+        self.logger.info(f"Trainingsdauer: {duration:.2f} Sekunden")
         
         # Modell speichern
         model_path = f"./models/{self.algo_name}_{self.env_id}_{self.seed}_final.zip"

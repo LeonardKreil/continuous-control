@@ -29,7 +29,7 @@ class TrainingLoggerCallback(BaseCallback):
         
         # Erstelle CSV-Datei mit Header
         with open(self.training_log_file, "w") as f:
-            f.write("timestep,episode,reward,episode_length,success_rate\n")
+            f.write("timestep,episode,reward,reward_std,episode_length,success_rate\n")
         
         self.last_mean_reward = -np.inf
         
@@ -84,7 +84,7 @@ class TrainingLoggerCallback(BaseCallback):
             
             # Log in Datei speichern
             with open(self.training_log_file, "a") as f:
-                f.write(f"{self.num_timesteps},{len(self.evaluations_timesteps)},{mean_reward},{mean_length},{success_rate}\n")
+                f.write(f"{self.num_timesteps},{len(self.evaluations_timesteps)},{mean_reward},{std_reward},{mean_length},{success_rate}\n")
             
             # Speichere detaillierte Ergebnisse als NPZ-Datei
             np.savez(

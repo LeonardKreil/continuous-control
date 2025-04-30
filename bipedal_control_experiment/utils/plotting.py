@@ -44,8 +44,8 @@ def plot_learning_curve(log_dirs, labels=None, title="Lernkurven", window=5):
         # Plot
         plt.plot(smooth_timesteps, smooth_rewards, label=labels[i])
     
-    plt.xlabel('Timesteps')
-    plt.ylabel('Durchschnittliche Belohnung')
+    plt.xlabel("Environment Interactions (Steps)")
+    plt.ylabel('Mean Reward')
     plt.title(title)
     plt.legend()
     plt.grid(True)
