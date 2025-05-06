@@ -162,7 +162,7 @@ class Experiment:
         
         return mean_reward, std_reward
     
-    def visualize(self, n_episodes=50):
+    def visualize(self, n_episodes=5):
         """Visualisiert das trainierte Modell."""
         self.logger.info(f"Visualisiere {self.algo_name} für {n_episodes} Episoden")
         
