@@ -91,10 +91,72 @@ bipedal_control_experiment/
 ```
 
 ## ▶️ Usage
+
+To train or evaluate a reinforcement learning agent in a specific Gymnasium environment, use:
+
 ```bash
-python main.py
+python main.py --algo <algorithm> --env <environment> [--train_steps <timesteps>] [--eval_freq <frequency>] [--seed <seed>] [--visualize] [--compare]
 ```
-### Features:
+
+### 🔧 Options
+
+--algo – Algorithm to use (ppo, sac, ddpg)
+
+--env – Gym environment (e.g., BipedalWalker-v3)
+
+--train_steps – Number of training steps (default: 1000000)
+
+--eval_freq – Evaluation frequency during training (default: 10000)
+
+--seed – Random seed (default: 42)
+
+--visualize – Visualize a trained agent instead of training
+
+--compare – Compare all available algorithms on the selected environment
+
+## 📈 Algorithm Comparison Usage
+This script allows you to compare the performance (with mean and std of multiple runs) of different reinforcement learning algorithms by loading and plotting their training_log.csv files.
+
+```bash
+cd utils
+
+python compare_results.py --patterns <pattern1> <pattern2> ... [options]
+```
+
+### 🔧 Options
+--dir – Base directory where the result folders are located (default: current directory ".")
+
+--patterns – Required. List of folder name patterns (e.g., ddpg_* ppo_*) to match experiment runs
+
+--labels – Optional list of custom labels for each algorithm in the legend
+
+--title – Plot title (default: "Comparison of different continuous controll algorithms")
+
+--window – Moving average window size (default: 10)
+
+--save – Path to save the plot (e.g., plots/comparison.png). If not set, the plot is shown instead
+
+--colors – Optional list of colors for each algorithm plot (e.g., red blue green)
+
+## 📊 Plot Multiple Reward Curves Usage
+This script allows you to visualize and compare the reward progression from multiple training runs, each stored in a separate CSV file.
+
+```bash
+python plot_multiple_rewards.py --csv <file1.csv> <file2.csv> ... [options]
+```
+
+🔧 Options
+--csv – Required. List of paths to CSV files containing timestep and reward columns
+
+--labels – Optional list of custom labels for the legend (must match the number of CSVs)
+
+--title – Plot title (default: "Reward-Vergleich")
+
+--window – Moving average window size (default: 10)
+
+--save – Path to save the plot as an image (e.g., plots/reward_plot.png). If not set, the plot is shown interactively
+
+## Features:
 - Selection of DDPG, SAC, PPO
 - Configuration via config/
 - Training and evaluation
@@ -127,8 +189,8 @@ python main.py
 
 | Algorithm | Convergence Speed       | Max Reward | Training Time |
 |-----------|--------------------------|------------|---------------|
-| SAC       | High (~200k steps)       | ~280       | 5.50 hours    |
-| PPO       | Medium (~300k steps)     | ~225       | 0.35 hours    |
+| SAC       | High (~300k steps)       | ~300       | 5.50 hours    |
+| PPO       | Medium (~400k steps)     | ~200       | 0.35 hours    |
 | DDPG      | Low (>400k steps)        | ~0         | 1.25 hours    |
 
 ### Key Insights:
