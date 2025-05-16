@@ -95,6 +95,8 @@ bipedal_control_experiment/
 To train or evaluate a reinforcement learning agent in a specific Gymnasium environment, use:
 
 ```bash
+cd bipedal_control_experiment
+
 python main.py --algo <algorithm> --env <environment> [--train_steps <timesteps>] [--eval_freq <frequency>] [--seed <seed>] [--visualize] [--compare]
 ```
 
