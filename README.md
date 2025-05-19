@@ -21,8 +21,8 @@ These algorithms are tested in the **BipedalWalker-v3** environment, a complex c
 - **State space:** 24 dimensions (Position, joint angles, velocities, ground contact)
 - **Action space:** 4 continuous dimensions \[-1, 1\] (Torques on hips & knees)
 - **Reward system:**
-  - + for forward movement
-  - - for energy consumption and unnatural movements
+  - positive reward for forward movement
+  - negative reward for energy consumption and unnatural movements
   - +300 for reaching the goal
   - Penalty for falling
 
