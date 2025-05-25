@@ -71,16 +71,13 @@ bipedal_control_experiment/
 │   └── td3.py             # Twin Delayed DDPG (optional)
 ├── utils/
 │   ├── logger.py          # Logging
-│   ├── plotting.py        # Visualization
-│   └── evaluation.py      # Evaluation
-├── config/
-│   ├── hyperparameters.py # Configuration
 │   ├── callbacks.py
 │   ├── evaluation.py
-│   ├── logger.py
 │   ├── multi_plot.py
 │   ├── plot.py
-│   └── plotting.py
+│   └── plotting.py        # Visualization
+├── config/
+│   └── hyperparameters.py # Configuration
 ├── experiments/
 │   ├── experiment.py      # Experiment classes
 │   └── compare.py         # Comparison functions
