@@ -1,0 +1,107 @@
+\section{Algorithms for Continuous Control}
+
+\subsection{\gls{DDPG}}
+\gls{DDPG}, introduced by Lillicrap et al.~\cite{lillicrap2019continuouscontroldeepreinforcement}, adapts the deterministic policy gradient by incorporating deep neural networks for function approximation. It is an off-policy, actor-critic algorithm designed for continuous action spaces.\\
+
+\noindent \gls{DDPG} relies on the deterministic policy gradient theorem to compute gradients of the expected return with respect to the policy parameters \cite{lillicrap2019continuouscontroldeepreinforcement}:
+
+{\footnotesize
+\begin{equation}
+\nabla_{\theta^\mu} J \approx \mathbb{E}_{s \sim \rho^\beta}\left[\nabla_a Q(s, a|\theta^Q)\big|_{a=\mu(s|\theta^\mu)} \cdot \nabla_{\theta^\mu} \mu(s|\theta^\mu)\right]
+\end{equation}
+}
+
+\noindent where $\mu(s|\theta^\mu)$ is the deterministic policy, $Q(s, a|\theta^Q)$ is the action-value function, and $\rho^\beta$ is the state distribution under the behavior policy $\beta$.
+
+\noindent The core components of \gls{DDPG}:
+
+\begin{itemize}
+    \item Deterministic Actor: Policy network $\mu_\theta(s)$ mapping states directly to actions.
+    \item Q-Network Critic: Q-network estimating the action-value function $Q(s, a)$.
+\end{itemize}
+
+\noindent Stability mechanism:
+\begin{itemize}
+    \item Target Networks: Slowly updated copies, $\mu_{\theta'}$ and $Q_{\phi'}$, used for training stability.
+    \item Replay Buffer: Stores transitions for sample-efficient learning.
+    \item Exploration: Adds noise to deterministic actions \cite{lillicrap2019continuouscontroldeepreinforcement}:
+    \begin{equation}
+    a = \mu(s|\theta^\mu) + \mathcal{N}
+    \end{equation}
+    where $\mathcal{N}$ is typically Ornstein-Uhlenbeck or Gaussian noise.
+\end{itemize}
+
+\noindent \gls{DDPG} training alternates between environment interaction and network updates. The actor selects actions with added noise to encourage exploration, and the resulting transitions are stored in a replay buffer.\\
+
+\noindent During the learning phase, mini-batches sampled from this buffer are used to update the critic by minimizing the Bellman error\footnote{The Bellman error measures the difference between predicted Q-values and the target values computed using the Bellman equation: $|Q(s,a) - (r + \gamma Q(s',a'))|$.}, and to update the actor by maximizing the predicted Q-values estimated by the critic.\\
+
+\noindent To maintain training stability, target networks are slowly updated using Polyak averaging \cite{lillicrap2019continuouscontroldeepreinforcement}:
+\begin{equation}
+\theta' \leftarrow \tau \theta + (1 - \tau) \theta',
+\end{equation}
+\noindent where \(\tau \ll 1\) controls the smoothness of the update.\\
+
+\noindent This approach offers several advantages, including high sample efficiency due to off-policy learning and a relatively straightforward implementation. However, it also comes with limitations, such as sensitivity to hyperparameter settings and noise configuration, as well as potential training instability in more complex environments~\cite{lillicrap2019continuouscontroldeepreinforcement}.
+
+
+\subsection{\gls{PPO}}
+
+Introduced by Schulman et al.~\cite{schulman2017proximalpolicyoptimizationalgorithms}, \gls{PPO} is a policy gradient method designed to address the instability often encountered in earlier policy optimization approaches. \gls{PPO} is an on-policy and excels in discrete and continuous action spaces, balancing stability and simplicity.\\
+
+\noindent \gls{PPO}'s key innovation is its clipping mechanism that prevents excessive policy updates and improves training stability. The clipped objective function is formulated as \cite{schulman2017proximalpolicyoptimizationalgorithms}:
+
+{\footnotesize
+\begin{equation}
+L^{\text{CLIP}}(\theta) = \mathbb{E}_t\left[\min\left(r_t(\theta)\hat{A}_t,\ \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon)\hat{A}_t\right)\right]
+\end{equation}
+}
+
+\noindent where \(r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}\) is the probability ratio between the new and old policies, \(\hat{A}_t\) is the estimated advantage function, \(\epsilon\) is a hyperparameter (typically 0.1 or 0.2) that defines the clipping range.\\
+
+\noindent The core components of \gls{PPO} are:
+\newacronym{GAE}{GAE}{Generalized Advantage Estimation}
+\begin{itemize}
+    \item Stochastic Policy Network \(\pi_\theta\): Determines action probabilities.
+    
+    \item Value Network \(V_\phi\): Estimates expected rewards (state-value function).
+    
+    \item Advantage Estimation: Helps the agent figure out how much better an action is compared to the average. It uses \gls{GAE}.
+    
+    \item Clipped Objective: Limits policy updates to ensure training stability by preventing overly large changes.
+\end{itemize}
+
+\noindent \gls{PPO} trains in cycles: the agent gathers experience with its current policy, estimates advantages using \gls{GAE}, and updates the policy using a clipped objective to limit drastic changes. It then refines the value function and repeats the cycle. Training usually includes multiple epochs of mini-batch gradient ascent, often with an entropy bonus to promote exploration.\\
+
+\noindent \gls{PPO} is reliable, robust to hyperparameters, and works well in parallelized environments. However, as an on-policy method, it's less sample-efficient than off-policy algorithms. \gls{PPO} is best for tasks prioritizing stability and simplicity with limited computational resources~\cite{schulman2017proximalpolicyoptimizationalgorithms, schulman2015gae}.
+
+\subsection{\gls{SAC}}
+
+\gls{SAC}, introduced by Haarnoja et al.~\cite{haarnoja2018softactorcriticoffpolicymaximum}, represents an advancement in reinforcement learning by integrating actor-critic methodology with maximum entropy principles. This off-policy algorithm excels in continuous action spaces, offering improved exploration capabilities and learning efficiency compared to traditional approaches.\\
+
+\noindent The core components of {\gls{SAC}}:
+\begin{itemize}[noitemsep]
+  \item Stochastic Actor Network: Outputs parameters of a Gaussian distribution over actions, enabling continuous, probabilistic control.
+  \item Twin Q-Function Critics:  Two independent critics estimate state-action values, reducing overestimation bias. Each critic has a corresponding target network, which is softly updated to stabilize training.
+  \item Entropy Regularization ($\alpha$): The temperature parameter ($\alpha$) is automatically adjusted to balance exploration and exploitation during training.
+\end{itemize}
+
+\noindent {\gls{SAC}} optimizes a maximum entropy objective, which encourages both high expected return and stochasticity in the policy for better exploration. The objective is defined as~\cite{haarnoja2018softactorcriticoffpolicymaximum}:
+
+{\footnotesize
+\begin{equation}
+J(\pi) = \sum_{t=0}^{T} \mathbb{E}_{(s_t, a_t) \sim \rho_\pi} \left[ r(s_t, a_t) + \alpha \mathcal{H}(\pi(\cdot \mid s_t)) \right]
+\end{equation}
+}
+
+\noindent where:
+
+\begin{itemize}
+    \item \(\mathcal{H}(\pi(\cdot|s_t)) = -\log \pi(a_t|s_t)\) is the entropy of the policy at state \(s_t\),
+    \item \(\alpha\) is the entropy temperature that controls exploration vs. exploitation,
+    \item \(\rho_\pi\): the distribution of state-action pairs the policy visits, and
+    \item \(r(s_t, a_t)\): the reward.
+\end{itemize}
+
+\noindent Similar to {\gls{DDPG}}, {\gls{SAC}} employs a replay buffer to store past experiences for sample-efficient learning. The twin Q-function critics along with their target networks reduce overestimation bias, and update them by minimizing the soft Bellman error. The policy (actor) is updated using the reparameterization trick to directly optimize a stochastic objective that balances expected return and entropy, encouraging diverse action selection. {\gls{SAC}}’s stochastic policy is regularized with an adaptive temperature parameter \(\alpha\), which is automatically tuned during training to maintain a target entropy level, ensuring an effective trade-off between exploration and exploitation throughout learning.\\
+
+\noindent  Advantages of {\gls{SAC}} include improved exploration, high sample efficiency, and stable learning, making it well-suited for complex continuous control tasks like robotic manipulation and autonomous driving. However, it has limitations such as higher computational costs from training multiple networks and difficulties in sparse-reward environments. Despite these, \gls{SAC} remains a popular and effective reinforcement learning method~\cite{haarnoja2018softactorcriticoffpolicymaximum, haarnoja2019sacapplications}.

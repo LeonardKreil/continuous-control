@@ -1,0 +1,11 @@
+\section{Introduction}
+
+\lettrine[nindent=0em,lines=3]{R} \MakeLowercase{\gls{RL}} has achieved remarkable successes across various domains, from games like Go and chess~\cite{doi:10.1126/science.aar6404} to industrial processes ~\cite{NEURIPS2018_059fdcd9}. While discrete action spaces are well-studied, many real-world applications require agents to operate in continuous action spaces, which represents a more challenging domain known as continuous control ~\cite{lillicrap2019continuouscontroldeepreinforcement}. In continuous control, agents must select actions from an infinite set of possibilities rather than choosing from finite discrete options.\\
+
+\noindent Continuous control has gained attention due to its direct applicability to robotics, autonomous vehicles, and physical systems that require precise control signals rather than discrete choices. For example, a walking robot needs specific joint torque values rather than simply "move forward" or "turn left" commands~\cite{lillicrap2019continuouscontroldeepreinforcement}.\\
+
+\noindent This domain presents several fundamental challenges. First, exploration is more difficult as agents must search through infinite action spaces~\cite{duan2016benchmarkingdeepreinforcementlearning}. Second, function approximation becomes necessary for policies and value functions. Third, complex dynamics and long time horizons require learning long-term dependencies~\cite{lillicrap2019continuouscontroldeepreinforcement}.\\
+
+\noindent The Bipedal Walker environment from OpenAI Gym demonstrates these challenges, which require an agent to control a two-legged robot to walk forward without falling. The robot must apply continuous torque values to each joint~\cite{openai2021bipedalwalker}. The task combines the challenges of balance and coordination, making it an excellent benchmark for comparing continuous control algorithms.\\
+
+\noindent This paper compares three prominent continuous control algorithms, \gls{DDPG}~\cite{lillicrap2019continuouscontroldeepreinforcement}, \gls{PPO}~\cite{schulman2017proximalpolicyoptimizationalgorithms}, and \gls{SAC}~\cite{haarnoja2018softactorcriticoffpolicymaximum}, analyzing their performance, convergence properties, and stability characteristics using the Bipedal Walker environment.

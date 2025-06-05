@@ -1,0 +1,25 @@
+\section{Conclusion}
+
+%\subsection{Summary of Key Findings}
+%In the BipedalWalker environment, SAC demonstrated superior performance in convergence speed, stability, and final rewards, confirming its effectiveness for continuous control tasks \cite{haarnoja2018softactorcriticoffpolicymaximum}. While SAC is sample-efficient but computationally demanding, PPO offers robust and scalable training, and DDPG struggles without careful tuning. \\
+
+%\noindent Based on our findings, SAC is the preferred choice for tasks requiring data efficiency and robust control, such as real-world robotics applications. PPO, on the other hand, offers stable and scalable training, making it effective in simulated environments that support parallelization. DDPG, while conceptually simple, is highly sensitive to hyperparameters and prone to instability. It should therefore only be used when extensive tuning is feasible.
+
+%\subsection{Summary of Key Findings}
+Our comparison of \gls{DDPG}, \gls{PPO}, and \gls{SAC} algorithms on the BipedalWalker-v3 environment reveals valuable insights for reinforcement learning users. \gls{SAC} demonstrated superior performance across all key metrics: faster convergence (stable performance in \textasciitilde300,000 environment interactions), higher final performance (\textasciitilde300 reward points), and greater consistency across multiple runs. These results confirm \gls{SAC}'s effectiveness for continuous control tasks and align with previous findings in the literature.\\
+
+\noindent Without any hyperparameter tuning, our implementation achieves competitive results compared to current state-of-the-art performance on this environment (approximately 300-320 reward points in recent benchmarks).\\ % The performance differences stem from fundamental design choices: SAC's entropy regularization mechanism enables effective exploration while its off-policy learning allows efficient use of past experiences. PPO's conservative policy updates provide stability but limit sample efficiency, while DDPG's deterministic approach proves inadequate for the complex exploration requirements of bipedal locomotion without careful tuning.
+
+\noindent These findings translate into practical recommendations for algorithm selection:
+
+\begin{itemize}
+    \item \gls{SAC} is preferred for tasks requiring data efficiency and robust control, such as real-world robotic applications where data collection is expensive and tuning opportunities limited.
+    \item \gls{PPO} offers stable and scalable training, making it effective in simulated environments supporting parallelization, particularly where stability is crucial.
+    \item \gls{DDPG}, while conceptually simple, is highly sensitive to hyperparameters and prone to instability, making it suitable only when extensive tuning is feasible or for simpler control tasks.
+\end{itemize}
+
+\noindent It should be noted that our results are limited to a single environment and may not fully generalize to other continuous control tasks with different dynamics. In addition, all algorithms were evaluated without hyperparameter tuning, which may have particularly impacted \gls{DDPG}'s performance. Nonetheless, they provide practical guidance for algorithm selection in resource-constrained settings.
+
+%\subsection{Future Research Directions}
+
+%Future progress in continuous control will likely be driven by several key research directions. Model-based reinforcement learning promises to improve sample efficiency by incorporating learned dynamics into decision making. Hierarchical approaches, which break down locomotion into simpler subtasks like balance and forward movement, may lead to more scalable and interpretable control. Multi-task and transfer learning could enable agents to generalize better across different environments by reusing acquired knowledge.Integrating prior knowledge, such as physics models or expert demonstrations, could significantly accelerate training and improve performance in complex tasks.
