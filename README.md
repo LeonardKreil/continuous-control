@@ -119,7 +119,7 @@ This script allows you to compare the performance (with mean and std of multiple
 ```bash
 cd utils
 
-python compare_results.py --patterns <pattern1> <pattern2> ... [options]
+python plot.py --patterns <pattern1> <pattern2> ... [options]
 ```
 
 ### 🔧 Options
